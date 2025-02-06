@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Listing } from "./Listings";
+import { Listing } from "./Listing";
 import axios from "axios";
 import { Button } from "primereact/button";
 
