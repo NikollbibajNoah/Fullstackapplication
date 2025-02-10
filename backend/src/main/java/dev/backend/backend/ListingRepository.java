@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ListingRepository extends MongoRepository<Listing, String> {
-    
+    long count();
 }

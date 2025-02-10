@@ -1,78 +1,72 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Listing } from "./Listing";
-import { DataScroller } from "primereact/datascroller";
-import { useNavigate } from "react-router-dom";
-import { Button } from "primereact/button";
+import { CardGrid } from "./components";
+import { Paginator } from "primereact/paginator";
 
 export const ListingsPage = () => {
-  const navigate = useNavigate();
   const [listings, setListings] = useState<Listing[] | undefined>([]);
+  const [listingsCount, setListingsCount] = useState<number>(0);
+  const [first, setFirst] = useState<number>(0);
+  const [rows, setRows] = useState<number>(10);
 
-  useEffect(function () {
-    const fetchListings = async function () {
+  useEffect(() => {
+    const fetchListingsCount = async function () {
       try {
-        const res = await axios.get("http://localhost:8080/listings");
+        const res = await axios.get("http://localhost:8080/listings/count");
 
         if (res.status === 200) {
-          setListings(res.data);
           console.log(res.data);
+          setListingsCount(res.data);
         }
       } catch (error) {
         console.error(error);
+        
       }
-    };
+    }
 
-    fetchListings();
+    fetchListingsCount();
   }, []);
 
-  const itemTemplate = function (listing: Listing) {
-    return (
-      <div className="col-12" key={listing.id}>
-        <div className="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
-          <div className="w-24 h-20 ">
-            <img
-              className="object-cover w-full h-full rounded shadow"
-              src={listing.images.picture_url}
-              alt={listing.name}
-            />
-          </div>
-          <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-            <div className="flex flex-col w-80 align-items-center sm:align-items-start gap-3">
-              <div className="text-2xl font-bold text-900">{listing.name}</div>
-              <div className="max-h-32 text-ellipsis line-clamp-3 text-xs">
-                {listing.description}
-              </div>
-            </div>
-            <div className="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2">
-              <span className="text-2xl font-semibold">${listing.price}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex py-4">
-          <div className="ml-auto">
-            <Button
-              label="Details"
-              onClick={function () {
-                navigate(`/listings/${listing.id}`);
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    );
+  useEffect(
+    function () {
+      const fetchListings = async function () {
+        try {
+          const res = await axios.get(
+            `http://localhost:8080/listings?page=${first}&size=${rows}`
+          );
+
+          if (res.status === 200) {
+            setListings(res.data);
+            console.log(res.data);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchListings();
+    },
+    [first, rows]
+  );
+
+  const onPageChange = function (event: { first: number; rows: number }) {
+    setFirst(event.first / event.rows);
+    setRows(event.rows);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div>
-      <div className="card max-w-[600px] mx-auto my-8">
-        <DataScroller
-          value={listings}
-          itemTemplate={itemTemplate}
-          rows={5}
-          inline
-          scrollHeight="500px"
-          header="Scroll Down to Load More"
+      <div className="mx-auto my-8 p-4 relative">
+        <CardGrid data={listings} />
+        <Paginator
+          first={first * rows}
+          rows={rows}
+          totalRecords={listingsCount}
+          rowsPerPageOptions={[10, 20, 30]}
+          onPageChange={onPageChange}
         />
       </div>
     </div>
