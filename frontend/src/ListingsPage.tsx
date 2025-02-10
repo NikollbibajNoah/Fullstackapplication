@@ -21,9 +21,8 @@ export const ListingsPage = () => {
         }
       } catch (error) {
         console.error(error);
-        
       }
-    }
+    };
 
     fetchListingsCount();
   }, []);
@@ -59,15 +58,21 @@ export const ListingsPage = () => {
 
   return (
     <div>
-      <div className="mx-auto my-8 p-4 relative">
-        <CardGrid data={listings} />
-        <Paginator
-          first={first * rows}
-          rows={rows}
-          totalRecords={listingsCount}
-          rowsPerPageOptions={[10, 20, 30]}
-          onPageChange={onPageChange}
-        />
+      <div className="p-12 relative">
+        {listings ? (
+          <>
+            <CardGrid data={listings} />
+            <Paginator
+              first={first * rows}
+              rows={rows}
+              totalRecords={listingsCount}
+              rowsPerPageOptions={[10, 20, 30]}
+              onPageChange={onPageChange}
+            />
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
     </div>
   );
