@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Listing } from "./Listing";
-import axios from "axios";
 import { Button } from "primereact/button";
 import Dummy from "./assets/images/dummy.png";
+import { getListingById } from "./service/ListingService";
 
 export const DetailsPage = () => {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [listing, setListing] = useState<Listing | undefined>(undefined);
   const [inspectedImage, setInspectedImage] = useState<string | undefined>(
@@ -16,15 +17,10 @@ export const DetailsPage = () => {
   useEffect(
     function () {
       const fetchListing = async function () {
-        try {
-          const res = await axios.get(`http://localhost:8080/listings/${id}`);
+        const data = await getListingById(id!);
 
-          if (res.status === 200) {
-            setListing(res.data);
-            console.log(res.data);
-          }
-        } catch (error) {
-          console.error(error);
+        if (data) {
+          setListing(data);
         }
       };
 
@@ -32,6 +28,18 @@ export const DetailsPage = () => {
     },
     [id]
   );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      handleBackClick();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [location.state]);
 
   const inspectImage = () => {
     setInspectedImage(listing?.images.picture_url);
@@ -45,15 +53,24 @@ export const DetailsPage = () => {
     event.currentTarget.src = Dummy;
   };
 
+  const handleBackClick = () => {
+    if (location.state && location.state.first !== undefined && location.state.rows !== undefined) {
+      navigate("/", {
+        state: { first: location.state.first, rows: location.state.rows, scrollPosition: location.state.scrollPosition },
+      });
+    } else {
+      navigate("/");
+    }
+  };
+
+
   return (
     <div>
       <div className="flex flex-col gap-4 p-4">
         <div>
           <Button
             label="Back"
-            onClick={function back() {
-              navigate(-1);
-            }}
+            onClick={handleBackClick}
           />
         </div>
         <div className="flex flex-col lg:flex-row lg:justify-around gap-4 max-h-full">

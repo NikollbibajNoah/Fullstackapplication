@@ -6,9 +6,11 @@ import Dummy from "../assets/images/dummy.png";
 
 export interface CardGridProps {
   data: Listing[] | undefined;
+  page: number;
+  rows: number; 
 }
 
-export const CardGrid = ({ data }: CardGridProps) => {
+export const CardGrid = ({ data, page, rows }: CardGridProps) => {
   const navigate = useNavigate();
 
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -45,7 +47,11 @@ export const CardGrid = ({ data }: CardGridProps) => {
                   className="ml-auto"
                   label="Details"
                   onClick={function () {
-                    navigate(`/listings/${listing.id}`);
+                    const scrollPosition = window.scrollY;
+
+                    navigate(`/listings/${listing.id}`, {
+                      state: { first: page, rows: rows, scrollPosition }, //Save Status of the page
+                    });
                   }}
                 />
               </div>

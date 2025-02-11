@@ -1,14 +1,18 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Listing } from "./Listing";
 import { CardGrid } from "./components";
 import { Paginator } from "primereact/paginator";
+import { getListings } from "./service/ListingService";
+import { useLocation } from "react-router-dom";
 
 export const ListingsPage = () => {
+  const location = useLocation();
   const [listings, setListings] = useState<Listing[] | undefined>([]);
   const [listingsCount, setListingsCount] = useState<number>(0);
-  const [first, setFirst] = useState<number>(0);
-  const [rows, setRows] = useState<number>(10);
+  const [first, setFirst] = useState<number>(location.state?.first || 0);
+  const [rows, setRows] = useState<number>(location.state?.rows || 10);
+  const scrollPositionRef = useRef<number>(location.state?.scrollPosition || 0);
 
   useEffect(() => {
     const fetchListingsCount = async function () {
@@ -16,7 +20,6 @@ export const ListingsPage = () => {
         const res = await axios.get("http://localhost:8080/listings/count");
 
         if (res.status === 200) {
-          console.log(res.data);
           setListingsCount(res.data);
         }
       } catch (error) {
@@ -30,17 +33,15 @@ export const ListingsPage = () => {
   useEffect(
     function () {
       const fetchListings = async function () {
-        try {
-          const res = await axios.get(
-            `http://localhost:8080/listings?page=${first}&size=${rows}`
-          );
+        const data = await getListings(first, rows);
 
-          if (res.status === 200) {
-            setListings(res.data);
-            console.log(res.data);
-          }
-        } catch (error) {
-          console.error(error);
+        if (data) {
+          setListings(data);
+
+          window.scrollTo({
+            top: scrollPositionRef.current,
+            behavior: "smooth",
+          });
         }
       };
 
@@ -54,6 +55,7 @@ export const ListingsPage = () => {
     setRows(event.rows);
 
     window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollPositionRef.current = 0; //Reset scroll height on new page
   };
 
   return (
@@ -61,7 +63,7 @@ export const ListingsPage = () => {
       <div className="p-12 relative">
         {listings ? (
           <>
-            <CardGrid data={listings} />
+            <CardGrid data={listings} page={first} rows={rows} />
             <Paginator
               first={first * rows}
               rows={rows}
