@@ -22,6 +22,7 @@ public class Listing {
     private double price;
     private Date last_scraped;
     private Images images;
+    private Host host;
 
     @Data
     @AllArgsConstructor
@@ -31,5 +32,15 @@ public class Listing {
         private String medium_url;
         private String picture_url;
         private String xl_picture_url;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Host {
+        private String host_id;
+        private String host_name;
+        private String host_location;
+        private String host_picture_url;
     }
 }

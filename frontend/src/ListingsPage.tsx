@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Listing } from "./Listing";
 import { CardGrid } from "./components";
 import { Paginator } from "primereact/paginator";
-import { getListings } from "./service/ListingService";
+import { getListings, getListingsCount } from "./service/ListingService";
 import { useLocation } from "react-router-dom";
 
 export const ListingsPage = () => {
@@ -16,14 +15,10 @@ export const ListingsPage = () => {
 
   useEffect(() => {
     const fetchListingsCount = async function () {
-      try {
-        const res = await axios.get("http://localhost:8080/listings/count");
+      const data = await getListingsCount();
 
-        if (res.status === 200) {
-          setListingsCount(res.data);
-        }
-      } catch (error) {
-        console.error(error);
+      if (data) {
+        setListingsCount(data);
       }
     };
 

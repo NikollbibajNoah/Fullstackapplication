@@ -4,6 +4,7 @@ export interface Listing {
     description: string;
     price: number;
     images: Images;
+    host: Host;
 }
 
 interface Images {
@@ -11,4 +12,11 @@ interface Images {
     medium_url: string | undefined;
     picture_url: string | undefined;
     xl_picture_url: string | undefined;
+}
+
+interface Host {
+    host_id: string;
+    host_name: string;
+    host_location: string;
+    host_picture_url: string;
 }
