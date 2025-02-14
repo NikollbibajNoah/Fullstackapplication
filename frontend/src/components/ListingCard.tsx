@@ -3,13 +3,23 @@ import { Listing } from "../Listing";
 import { Button } from "primereact/button";
 import Dummy from "../assets/images/dummy.png";
 import DefaultProfile from "../assets/images/default.png";
+import { useState } from "react";
 
 export interface CardProps {
   data: Listing;
+  isFavorite: boolean;
   onDetails?: () => void;
+  onFavorite?: (listing: Listing, isFavorite: boolean) => void;
 }
 
-export const ListingCard = ({ data, onDetails }: CardProps) => {
+export const ListingCard = ({
+  data,
+  isFavorite,
+  onDetails,
+  onFavorite,
+}: CardProps) => {
+  const [favoriteStatus, setFavoriteStatus] = useState<boolean>(isFavorite);
+  
   const handleImageError = (
     event: React.SyntheticEvent<HTMLImageElement, Event>,
     placeholder?: string
@@ -20,6 +30,15 @@ export const ListingCard = ({ data, onDetails }: CardProps) => {
 
     event.currentTarget.src = placeholder;
   };
+
+  const toggleFavorite = () => {
+    const newFavoriteStatus = !favoriteStatus;
+    setFavoriteStatus(newFavoriteStatus);
+
+    if (onFavorite) {
+      onFavorite(data, newFavoriteStatus)
+    }
+  }
 
   return (
     <Card
@@ -57,7 +76,23 @@ export const ListingCard = ({ data, onDetails }: CardProps) => {
           <h2 className="font-bold text-sm sm:text-base lg:text-lg">
             ${data.price}
           </h2>
-          <Button className="ml-auto" label="Details" onClick={onDetails} />
+          <div className="flex items-center gap-2">
+            <Button
+              icon={`${favoriteStatus ? "pi pi-times" : "pi pi-heart"}`}
+              rounded
+              size="large"
+              text
+              raised
+              severity="danger"
+              aria-label="Favorite"
+              onClick={toggleFavorite}
+            />
+            <Button
+              className="ml-auto h-full"
+              label="Details"
+              onClick={onDetails}
+            />
+          </div>
         </div>
       }
     >

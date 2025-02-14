@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Listing } from "./Listing";
+import { Listing } from "../Listing";
 import { Button } from "primereact/button";
-import Dummy from "./assets/images/dummy.png";
-import { getListingById } from "./service/ListingService";
+import Dummy from "../assets/images/dummy.png";
+import { getListingById } from "../service/ListingService";
 
 export const DetailsPage = () => {
   const { id } = useParams();
@@ -49,29 +49,35 @@ export const DetailsPage = () => {
     setInspectedImage(undefined);
   };
 
-  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleImageError = (
+    event: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
     event.currentTarget.src = Dummy;
   };
 
   const handleBackClick = () => {
-    if (location.state && location.state.first !== undefined && location.state.rows !== undefined) {
-      navigate("/", {
-        state: { first: location.state.first, rows: location.state.rows, scrollPosition: location.state.scrollPosition },
+    if (
+      location.state &&
+      location.state.first !== undefined &&
+      location.state.rows !== undefined
+    ) {
+      navigate(location.state.previousURL, {
+        state: {
+          first: location.state.first,
+          rows: location.state.rows,
+          scrollPosition: location.state.scrollPosition,
+        },
       });
     } else {
       navigate("/");
     }
   };
 
-
   return (
     <div>
       <div className="flex flex-col gap-4 p-4">
         <div>
-          <Button
-            label="Back"
-            onClick={handleBackClick}
-          />
+          <Button label="Back" onClick={handleBackClick} />
         </div>
         <div className="flex flex-col lg:flex-row lg:justify-around gap-4 max-h-full">
           <div>

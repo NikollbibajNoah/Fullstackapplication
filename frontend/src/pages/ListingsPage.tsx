@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Listing } from "./Listing";
-import { CardGrid } from "./components";
 import { Paginator } from "primereact/paginator";
-import { getListings, getListingsCount } from "./service/ListingService";
 import { useLocation } from "react-router-dom";
+import { CardGrid } from "../components";
+import { Listing } from "../Listing";
+import { getListingsCount, getListings } from "../service/ListingService";
 
 export const ListingsPage = () => {
   const location = useLocation();
@@ -58,7 +58,11 @@ export const ListingsPage = () => {
       <div className="p-12 relative">
         {listings ? (
           <>
-            <CardGrid data={listings} page={first} rows={rows} />
+            <CardGrid
+              data={listings}
+              page={first}
+              rows={rows}
+            />
             <Paginator
               first={first * rows}
               rows={rows}
