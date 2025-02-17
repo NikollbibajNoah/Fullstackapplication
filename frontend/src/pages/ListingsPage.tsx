@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Paginator } from "primereact/paginator";
 import { useLocation } from "react-router-dom";
-import { CardGrid } from "../components";
+import { CardGrid, FilterOptions } from "../components";
 import { Listing } from "../Listing";
 import { getListingsCount, getListings } from "../service/ListingService";
+import { FilterOptionsProps } from "../components/FilterOptions";
 
 export const ListingsPage = () => {
   const location = useLocation();
@@ -25,44 +26,83 @@ export const ListingsPage = () => {
     fetchListingsCount();
   }, []);
 
-  useEffect(
-    function () {
-      const fetchListings = async function () {
-        const data = await getListings(first, rows);
+  useEffect(() => {
+    const fetchListings = async (
+      first: number,
+      rows: number,
+    ) => {
+      const data = await getListings(first, rows);
 
-        if (data) {
-          setListings(data);
+      if (data) {
+        setListings(data);
 
-          window.scrollTo({
-            top: scrollPositionRef.current,
-            behavior: "smooth",
-          });
-        }
-      };
+        handleScroll(scrollPositionRef.current);
+      }
+    };
 
-      fetchListings();
-    },
-    [first, rows]
-  );
+    fetchListings(first, rows);
+  }, [first, rows]);
+
+  const handleScroll = (position: number) => {
+    window.scrollTo({
+      top: position,
+      behavior: "smooth",
+    });
+  };
 
   const onPageChange = function (event: { first: number; rows: number }) {
     setFirst(event.first / event.rows);
     setRows(event.rows);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    handleScroll(0);
     scrollPositionRef.current = 0; //Reset scroll height on new page
+  };
+
+  const onUpdateFilter = (filterOptions: FilterOptionsProps) => {
+    console.log("Updating");
+
+    const fetchListings = async (
+      first: number,
+      rows: number,
+      filter?: FilterOptionsProps
+    ) => {
+      const data = await getListings(first, rows);
+
+      if (data) {
+        let filterData = data;
+
+        if (filter) {
+          if (filter.minPrice && filter.maxPrice) {
+            filterData = data.filter((listing: Listing) => {
+              if (
+                filter.minPrice !== undefined &&
+                filter.maxPrice !== undefined &&
+                listing.price >= filter.minPrice &&
+                listing.price <= filter.maxPrice
+              ) {
+                return listing;
+              }
+            });
+          }
+        }
+
+        setListings(filterData);
+        handleScroll(0);
+      }
+    };
+
+    fetchListings(first, rows, filterOptions);
   };
 
   return (
     <div>
-      <div className="p-12 relative">
+      <div className="px-12 py-6 relative">
         {listings ? (
           <>
-            <CardGrid
-              data={listings}
-              page={first}
-              rows={rows}
+            <FilterOptions
+              onUpdateFilter={onUpdateFilter}
             />
+            <CardGrid data={listings} page={first} rows={rows} />
             <Paginator
               first={first * rows}
               rows={rows}
