@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/listings")
-@CrossOrigin
 public class ListingController {
 
     @Autowired

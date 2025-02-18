@@ -4,6 +4,7 @@ import { FilterOptionsProps } from "../components/FilterOptions";
 
 const backendURL: string = import.meta.env.VITE_BACKEND_URL;
 const listingsEndpoint: string = import.meta.env.VITE_LISTINGS_ENDPOINT;
+const countEndpoint: string = import.meta.env.VITE_COUNT_ENDPOINT;
 
 const getListingsCount = async function (
   filterOptions?: FilterOptionsProps
@@ -21,7 +22,7 @@ const getListingsCount = async function (
       }
     }
 
-    const url = `${backendURL}${listingsEndpoint}/count?${params.toString()}`;
+    const url = `${backendURL}${listingsEndpoint}${countEndpoint}?${params.toString()}`;
     // console.log(url);
 
     const res = await axios.get(url);

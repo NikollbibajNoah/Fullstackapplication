@@ -55,7 +55,7 @@ export const FilterOptions = ({
   };
 
   return (
-    <Panel className="my-3" toggleable header="Filter" ref={ref}>
+    <Panel className="my-3" toggleable header="Filter" ref={ref} collapsed>
       <div className="p-2 flex gap-3 overflow-x-auto">
         <div>
           <h3 className="text-lg py-2">Preis</h3>
@@ -65,7 +65,7 @@ export const FilterOptions = ({
               onChange={(e: InputNumberChangeEvent) =>
                 handleMinPriceChange(e.value ?? undefined)
               }
-              min={0}
+              min={1}
               placeholder="Min"
             />
             <InputNumber
