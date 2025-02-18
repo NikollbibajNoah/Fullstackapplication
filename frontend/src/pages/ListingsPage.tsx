@@ -23,7 +23,7 @@ export const ListingsPage = () => {
 
   useEffect(() => {
     const fetchListingsCount = async function () {
-      const data = await getListingsCount();
+      const data = await getListingsCount(filterOptions);
 
       if (data) {
         setListingsCount(data);
@@ -31,7 +31,7 @@ export const ListingsPage = () => {
     };
 
     fetchListingsCount();
-  }, []);
+  }, [filterOptions]);
 
   useEffect(() => {
     prevFilterOptions.current = JSON.stringify(filterOptions);
@@ -87,6 +87,7 @@ export const ListingsPage = () => {
         {listings ? (
           <>
             <FilterOptions onUpdateFilter={onUpdateFilter} />
+            <div className="py-2"><b>Gefundene Treffer: </b>{listingsCount}</div>
             <CardGrid data={listings} page={first} rows={rows} />
             <Paginator
               first={first * rows}

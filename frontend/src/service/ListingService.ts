@@ -5,9 +5,26 @@ import { FilterOptionsProps } from "../components/FilterOptions";
 const backendURL: string = import.meta.env.VITE_BACKEND_URL;
 const listingsEndpoint: string = import.meta.env.VITE_LISTINGS_ENDPOINT;
 
-const getListingsCount = async function (): Promise<number | undefined> {
+const getListingsCount = async function (
+  filterOptions?: FilterOptionsProps
+): Promise<number | undefined> {
   try {
-    const res = await axios.get(`${backendURL}${listingsEndpoint}/count`);
+    const params = new URLSearchParams();
+
+    if (filterOptions) {
+      if (filterOptions.minPrice) {
+        params.append("minPrice", filterOptions.minPrice.toString());
+      }
+
+      if (filterOptions.maxPrice) {
+        params.append("maxPrice", filterOptions.maxPrice.toString());
+      }
+    }
+
+    const url = `${backendURL}${listingsEndpoint}/count?${params.toString()}`;
+    // console.log(url);
+
+    const res = await axios.get(url);
 
     if (res.status === 200) {
       return res.data;

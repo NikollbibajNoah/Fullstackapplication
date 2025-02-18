@@ -26,7 +26,8 @@ public class ListingController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "0") double minPrice,
             @RequestParam(required = false, defaultValue = "1000000") double maxPrice) {
-        return new ResponseEntity<List<Listing>>(listingService.getListings(page, size, minPrice, maxPrice), HttpStatus.OK);
+        return new ResponseEntity<List<Listing>>(listingService.getListings(page, size, minPrice, maxPrice),
+                HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -34,8 +35,15 @@ public class ListingController {
         return new ResponseEntity<Optional<Listing>>(listingService.getListingById(id), HttpStatus.OK);
     }
 
+    // @GetMapping("/count")
+    // public ResponseEntity<Long> getListingCount() {
+    //     return new ResponseEntity<Long>(listingService.countListings(), HttpStatus.OK);
+    // }
+
     @GetMapping("/count")
-    public ResponseEntity<Long> getListingCount() {
-        return new ResponseEntity<Long>(listingService.countListings(), HttpStatus.OK);
+    public ResponseEntity<Long> getListingsCount(
+            @RequestParam(required = false, defaultValue = "0") double minPrice,
+            @RequestParam(required = false, defaultValue = "1000000") double maxPrice) {
+        return new ResponseEntity<Long>(listingService.countListings(minPrice, maxPrice), HttpStatus.OK);
     }
 }

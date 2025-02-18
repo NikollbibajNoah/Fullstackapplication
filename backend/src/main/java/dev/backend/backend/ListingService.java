@@ -24,7 +24,11 @@ public class ListingService {
         return listingRepository.findById(id);
     }
 
-    public long countListings() {
-        return listingRepository.count();
+    // public long countListings() {
+    //     return listingRepository.count();
+    // }
+
+    public long countListings(double minPrice, double maxPrice) {
+        return listingRepository.countByFilter(minPrice, maxPrice);
     }
 }

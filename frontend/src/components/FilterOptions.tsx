@@ -16,6 +16,7 @@ export const FilterOptions = ({
 }) => {
   const ref = useRef<Panel>(null);
   const { filterOptions, setFilterOptions } = useFilter();
+  const prevFilterOptions = useRef(JSON.stringify(filterOptions));
 
   const handleMinPriceChange = (value: number | undefined) => {
     setFilterOptions((prev) => ({
@@ -39,12 +40,18 @@ export const FilterOptions = ({
         minPrice: undefined,
       };
 
-      if (onUpdateFilter) {
-        onUpdateFilter(updatedFilterOptions);
-      }
+      handleOnUpdateFilter(updatedFilterOptions);
 
       return updatedFilterOptions;
     });
+  };
+
+  const handleOnUpdateFilter = (updatedFilterOptions: FilterOptionsProps) => {
+    prevFilterOptions.current = JSON.stringify(updatedFilterOptions);
+
+    if (onUpdateFilter) {
+      onUpdateFilter(updatedFilterOptions);
+    }
   };
 
   return (
@@ -80,7 +87,12 @@ export const FilterOptions = ({
       <div className="flex justify-end mt-2">
         <Button
           label="Übernehmen"
-          onClick={() => onUpdateFilter && onUpdateFilter(filterOptions)}
+          disabled={
+            prevFilterOptions.current === JSON.stringify(filterOptions) ||
+            !filterOptions.minPrice ||
+            !filterOptions.maxPrice
+          }
+          onClick={() => handleOnUpdateFilter(filterOptions)}
         />
       </div>
     </Panel>
