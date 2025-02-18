@@ -13,17 +13,11 @@ public class ListingService {
     
     @Autowired
     private ListingRepository listingRepository;
-
-    // public List<Listing> getListings() {
-    //     Pageable pageable = PageRequest.of(0, 5);
-
-    //     return listingRepository.findAll(pageable).getContent();
-    // }
-    
-    public List<Listing> getListings(int page, int size) {
+   
+    public List<Listing> getListings(int page, int size, double minPrice, double maxPrice) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return listingRepository.findAll(pageable).getContent();
+        return listingRepository.findByPriceBetween(minPrice, maxPrice, pageable);
     }
 
     public Optional<Listing> getListingById(String id) {

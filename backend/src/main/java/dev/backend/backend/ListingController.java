@@ -23,8 +23,10 @@ public class ListingController {
 
     @GetMapping
     public ResponseEntity<List<Listing>> getListings(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return new ResponseEntity<List<Listing>>(listingService.getListings(page, size), HttpStatus.OK);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "0") double minPrice,
+            @RequestParam(required = false, defaultValue = "1000000") double maxPrice) {
+        return new ResponseEntity<List<Listing>>(listingService.getListings(page, size, minPrice, maxPrice), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -36,5 +38,4 @@ public class ListingController {
     public ResponseEntity<Long> getListingCount() {
         return new ResponseEntity<Long>(listingService.countListings(), HttpStatus.OK);
     }
-
 }
