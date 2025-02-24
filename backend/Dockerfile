@@ -1,17 +1,17 @@
-# Build Stage
-FROM maven:3-eclipse-temurin-17 AS build
+# Build Stage mit Java 21
+FROM maven:3-eclipse-temurin-21 AS build
 
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Run Stage
-FROM eclipse-temurin:17-alpine
+# Run Stage mit Java 21
+FROM eclipse-temurin:21-alpine
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Dynamischer Port für Cloud-Deployments (z. B. Railway, Render)
+# Dynamischer Port für Cloud-Deployments
 ENV PORT=8080
 EXPOSE 8080
 
