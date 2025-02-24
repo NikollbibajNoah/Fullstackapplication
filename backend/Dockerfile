@@ -9,11 +9,11 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-alpine
 
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar backend-0.0.1-SNAPSHOT.jar
 
 # Dynamischer Port für Cloud-Deployments
 ENV PORT=8080
 EXPOSE 8080
 
 # Run the jar file
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "backend-0.0.1-SNAPSHOT.jar"]
