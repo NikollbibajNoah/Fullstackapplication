@@ -8,6 +8,7 @@ import {
   getListingsWithFilter,
 } from "../service/ListingService";
 import { FilterOptionsProps } from "../components/FilterOptions";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export const ListingsPage = () => {
   const location = useLocation();
@@ -20,13 +21,16 @@ export const ListingsPage = () => {
     FilterOptionsProps | undefined
   >(undefined);
   const prevFilterOptions = useRef(JSON.stringify(filterOptions));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchListingsCount = async function () {
+      setIsLoading(true);
       const data = await getListingsCount(filterOptions);
 
       if (data) {
         setListingsCount(data);
+        setIsLoading(false);
       }
     };
 
@@ -84,21 +88,32 @@ export const ListingsPage = () => {
   return (
     <div>
       <div className="px-12 py-6 relative">
-        {listings ? (
-          <>
-            <FilterOptions onUpdateFilter={onUpdateFilter} />
-            <div className="py-2"><b>Gefundene Treffer: </b>{listingsCount}</div>
-            <CardGrid data={listings} page={first} rows={rows} />
-            <Paginator
-              first={first * rows}
-              rows={rows}
-              totalRecords={listingsCount}
-              rowsPerPageOptions={[10, 20, 30]}
-              onPageChange={onPageChange}
-            />
-          </>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-96">
+            <ProgressSpinner />
+          </div>
         ) : (
-          <p>Loading...</p>
+          <>
+            {listings ? (
+              <>
+                <FilterOptions onUpdateFilter={onUpdateFilter} />
+                <div className="py-2">
+                  <b>Gefundene Treffer: </b>
+                  {listingsCount}
+                </div>
+                <CardGrid data={listings} page={first} rows={rows} />
+                <Paginator
+                  first={first * rows}
+                  rows={rows}
+                  totalRecords={listingsCount}
+                  rowsPerPageOptions={[10, 20, 30]}
+                  onPageChange={onPageChange}
+                />
+              </>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -4,6 +4,7 @@ import { Listing } from "../Listing";
 import { Button } from "primereact/button";
 import Dummy from "../assets/images/dummy.png";
 import { getListingById } from "../service/ListingService";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export const DetailsPage = () => {
   const { id } = useParams();
@@ -13,14 +14,17 @@ export const DetailsPage = () => {
   const [inspectedImage, setInspectedImage] = useState<string | undefined>(
     undefined
   );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(
     function () {
       const fetchListing = async function () {
+        setIsLoading(true);
         const data = await getListingById(id!);
 
         if (data) {
           setListing(data);
+          setIsLoading(false);
         }
       };
 
@@ -79,30 +83,37 @@ export const DetailsPage = () => {
         <div>
           <Button label="Back" onClick={handleBackClick} />
         </div>
-        <div className="flex flex-col lg:flex-row lg:justify-around gap-4 max-h-full">
+        {isLoading ? (
           <div>
-            <div>
-              <h1 className="text-2xl font-bold">
-                {listing?.name} - #{listing?.id}
-              </h1>
-              <p className="text-gray-500 lg:max-w-[500px]">
-                {listing?.description}
-              </p>
-            </div>
-            <div className="flex items-center gap-3 my-5">
-              <h2 className="text-2xl font-semibold">${listing?.price}</h2>
-            </div>
+            <ProgressSpinner />
           </div>
-          <div>
-            <img
-              src={listing?.images.picture_url}
-              onError={handleImageError}
-              className="w-full h-full object-cover rounded shadow cursor-pointer"
-              onClick={inspectImage}
-            />
-          </div>
-        </div>
-        <div className="w-80"></div>
+        ) : (
+          <>
+            <div className="flex flex-col lg:flex-row lg:justify-around gap-4 max-h-full">
+              <div>
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    {listing?.name} - #{listing?.id}
+                  </h1>
+                  <p className="text-gray-500 lg:max-w-[500px]">
+                    {listing?.description}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 my-5">
+                  <h2 className="text-2xl font-semibold">${listing?.price}</h2>
+                </div>
+              </div>
+              <div>
+                <img
+                  src={listing?.images.picture_url}
+                  onError={handleImageError}
+                  className="w-full h-full object-cover rounded shadow cursor-pointer"
+                  onClick={inspectImage}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
       {inspectedImage && (
         <div className="fixed w-full h-screen bg-black bg-opacity-80 backdrop-blur-md left-0 top-0 flex flex-col">
